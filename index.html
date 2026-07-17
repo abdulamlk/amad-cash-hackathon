@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <title>أمد كاش - Amad Cash</title>
+    <link rel="stylesheet" href="style.css?v=12.0">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="phone-wrapper">
+        <div class="phone-notch"></div>
+            <div id="toast-container" class="toast-container"></div>
+            <div id="transfer-modal" style="display:none; position: absolute; top:0; left:0; width: 100%; height: 100%; background: rgba(11, 17, 25, 0.9); z-index: 5000; flex-direction: column; align-items: center; justify-content: center;">
+                <div class="app-card" style="width: 90%; max-width: 350px; background: #161e2b; border: 1px solid var(--gold); border-radius: 20px; padding: 25px; margin: 0 auto;">
+                    <h3 class="text-gold mb-15 text-center"><i class="fa-solid fa-building-columns"></i> تحويل لمحفظة الإنماء</h3>
+                    <p class="text-white text-center sm-text mb-20" style="line-height: 1.6;">أدخل المبلغ المراد تحويله من أمد كاش إلى حسابك الجاري في الإنماء.</p>
+                    <div style="position: relative; margin-bottom: 20px;">
+                        <input type="number" id="transfer-amount-input" class="form-input" style="font-size: 1.5rem; font-weight: bold; text-align: center; color: var(--gold);" placeholder="0.00">
+                        <span style="position: absolute; left: 15px; top: 15px; color: var(--text-muted); font-weight: bold;">ر.س</span>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" style="flex: 1; padding: 12px; font-size: 1rem; justify-content: center;" onclick="confirmAlinmaTransfer()">تحويل</button>
+                        <button class="btn btn-dark" style="flex: 1; padding: 12px; font-size: 1rem; justify-content: center; border: 1px solid rgba(255,255,255,0.1);" onclick="document.getElementById('transfer-modal').style.display='none'">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+            <div id="nafath-flow-modal" style="display:none; position: absolute; top:0; left:0; width: 100%; height: 100%; background: #0b1119; z-index: 3000; flex-direction: column; overflow-y: auto;">
+                <div style="background: #111824; border-bottom: 1px solid #1f2937; display: flex; flex-direction: column;">
+                    <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; gap: 5px; align-items: center;">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Flag_of_Saudi_Arabia.svg" style="height: 12px; border-radius: 2px;">
+                            <span style="font-size: 0.6rem; color: #f3f4f6;">موقع حكومي رسمي تابع لحكومة المملكة العربية السعودية</span>
+                        </div>
+                        <span style="color: #10b981; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; gap: 5px;" onclick="toggleNafathHelp()">
+                            كيف تتحقق <i id="nafath-help-icon" class="fa-solid fa-chevron-down"></i>
+                        </span>
+                    </div>
+                    <div id="nafath-help-panel" style="display: none; background: #1a2234; padding: 20px 15px; border-top: 1px solid #1f2937;">
+                        <div style="display: flex; align-items: flex-start; gap: 15px; margin-bottom: 25px; text-align: right;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #10b981; display: flex; justify-content: center; align-items: center; background: rgba(16, 185, 129, 0.05); flex-shrink: 0;">
+                                <i class="fa-solid fa-link" style="color: #10b981;"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 style="color: #ffffff; font-size: 0.85rem; margin: 0 0 5px 0;">روابط المواقع الالكترونية الرسمية السعودية تنتهي بـ <span style="color: #10b981;">gov.sa</span></h3>
+                                <p style="color: #9ca3af; font-size: 0.75rem; margin: 0; line-height: 1.5;">جميع روابط المواقع الرسمية التابعة للجهات الحكومية في المملكة العربية السعودية تنتهي بـ gov.sa.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: 15px; margin-bottom: 25px; text-align: right;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #10b981; display: flex; justify-content: center; align-items: center; background: rgba(16, 185, 129, 0.05); flex-shrink: 0;">
+                                <i class="fa-solid fa-lock" style="color: #10b981;"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 style="color: #ffffff; font-size: 0.85rem; margin: 0 0 5px 0;">المواقع الالكترونية الحكومية تستخدم بروتوكول <span style="color: #10b981;">HTTPS</span> للتشفير و الأمان.</h3>
+                                <p style="color: #9ca3af; font-size: 0.75rem; margin: 0; line-height: 1.5;">المواقع الالكترونية الآمنة في المملكة العربية السعودية تستخدم بروتوكول HTTPS للتشفير.</p>
+                            </div>
+                        </div>
+                        <div style="background: #111824; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-fingerprint" style="color: #3b82f6; font-size: 1.5rem;"></i>
+                                <div style="text-align: right;">
+                                    <div style="color: #ffffff; font-size: 0.75rem;">مسجل لدى هيئة</div>
+                                    <div style="color: #ffffff; font-size: 0.75rem;">الحكومة الرقمية برقم :</div>
+                                </div>
+                            </div>
+                            <div style="color: #10b981; font-size: 0.85rem; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <span style="text-decoration: underline;">20250818811</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="color: #ffffff; margin: 0; font-size: 1.8rem; font-weight: 800;">نفاذ</h2>
+                        <i class="fa-solid fa-bars" style="color: #9ca3af; font-size: 1.4rem;"></i>
+                    </div>
+                </div>
+                <div style="flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div id="naf-step-1" style="width: 100%; max-width: 350px; background: #161e2b; padding: 30px 20px; border-radius: 12px; border: 1px solid #1f2937;">
+                        <h2 style="color: #ffffff; text-align: center; margin-bottom: 10px; font-size: 1.6rem;">تسجيل الدخول</h2>
+                        <p style="color: #9ca3af; text-align: center; font-size: 0.95rem; margin-bottom: 30px;">مرحبا بك عميل أمد كاش</p>
+                        <div style="text-align: right; margin-bottom: 25px;">
+                            <label style="color: #ffffff; font-size: 0.9rem; font-weight: bold;">رقم الهوية <span style="color: #ef4444;">*</span></label>
+                            <input type="tel" id="naf-id-input" placeholder="الرجاء إدخال رقم الهوية" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="width: 100%; background: #0b1119; border: 1px solid #1f2937; padding: 15px; border-radius: 8px; color: #ffffff; margin-top: 10px; font-size: 1rem; box-sizing: border-box; letter-spacing: 2px;">
+                        </div>
+                        <button id="naf-login-btn" onclick="nafathGoToStep2()" style="background: #374151; color: #d1d5db; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 1.05rem; margin-bottom: 30px; cursor: pointer; font-weight: bold;">تسجيل الدخول</button>
+                        <div style="text-align: center; color: #e5e7eb; margin-bottom: 20px; position: relative;">
+                            <div style="border-top: 1px solid #374151; position: absolute; top: 50%; width: 100%; z-index: 1;"></div>
+                            <span style="background: #161e2b; padding: 0 15px; position: relative; z-index: 2; font-size: 0.95rem;">أو الدخول بإستخدام</span>
+                        </div>
+                        <button style="background: #1f2937; color: #ffffff; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 1rem; margin-bottom: 25px; cursor: pointer;">اسم المستخدم وكلمة المرور</button>
+                        <div style="text-align: center; color: #9ca3af; font-size: 0.95rem;">
+                            ليس لديك حساب؟ <a href="#" style="color: #10b981; text-decoration: none;">إنشاء حساب <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem;"></i></a>
+                        </div>
+                    </div>
+                    <div id="naf-step-2" style="display: none; width: 100%; max-width: 350px; background: #161e2b; padding: 40px 20px; border-radius: 12px; border: 1px solid #1f2937; text-align: center;">
+                        <div id="naf-random-num-display" style="font-size: 5rem; font-weight: 800; color: #ffffff; margin-bottom: 30px; letter-spacing: 2px;">12</div>
+                        <p style="color: #e5e7eb; font-size: 1.1rem; line-height: 1.6; margin-bottom: 40px; font-weight: 500;">يرجى فتح تطبيق نفاذ واختيار رقم الطلب الموضح أعلاه.</p>
+                        <div class="spinner mt-15" style="margin: 0 auto 20px auto; border-top-color: #10b981; width: 25px; height: 25px; border-width: 3px;"></div>
+                        <button onclick="document.getElementById('nafath-flow-modal').style.display='none'" style="background: transparent; color: #ffffff; border: 1px solid #374151; padding: 15px; width: 100%; border-radius: 8px; font-size: 1.05rem; cursor: pointer; font-weight: bold;">إلغاء</button>
+                    </div>
+                    <div id="naf-step-3" style="display: none; width: 100%; max-width: 350px; background: #161e2b; padding: 30px 20px; border-radius: 12px; border: 1px solid #1f2937; text-align: center;">
+                        <h2 style="color: #ffffff; margin-bottom: 15px; font-size: 1.5rem;">تأكيد الانتقال</h2>
+                        <p style="color: #e5e7eb; margin-bottom: 35px; font-size: 1.05rem;">أنت على وشك الانتقال إلى</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 45px; padding: 0 10px;">
+                            <div style="color: #ffffff; font-weight: bold; font-size: 1.2rem; width: 40%; line-height: 1.4;">النفاذ الوطني الموحد</div>
+                            <i class="fa-solid fa-arrow-right-arrow-left" style="color: #ffffff; font-size: 1.4rem;"></i>
+                            <div style="color: #ffffff; font-weight: bold; font-size: 1.2rem; width: 40%;">أمد كاش</div>
+                        </div>
+                        <p style="color: #e5e7eb; font-size: 0.95rem; margin-bottom: 30px; line-height: 1.6;">يرجى الضغط على (انتقال) لاستكمال العملية أو (إلغاء) لإلغائها</p>
+                        <button id="naf-transition-btn" onclick="nafathFinish()" style="background: #1f2937; color: #ffffff; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 1.05rem; margin-bottom: 15px; cursor: pointer;">انتقال</button>
+                        <button onclick="document.getElementById('nafath-flow-modal').style.display='none'" style="background: transparent; color: #ffffff; border: 1px solid #374151; padding: 15px; width: 100%; border-radius: 8px; font-size: 1.05rem; cursor: pointer;">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+            <div id="oauth-overlay" class="oauth-overlay" style="display: none;">
+                <div class="oauth-modal"
+                    style="background: #ffffff; color: #1e293b; padding: 30px 20px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                    <h2 style="color: #1e293b; font-size: 1.3rem; margin-bottom: 25px; text-align: center;"
+                        data-i18n="oauth_title">ربط الحساب البنكي</h2>
+                    <div style="text-align: center; margin-bottom: 25px; position: relative;">
+                        <div style="display: inline-block; position: relative;">
+                            <i class="fa-solid fa-building-columns"
+                                style="font-size: 4.5rem; color: #7c89f2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));"></i>
+                            <i class="fa-solid fa-shield-halved"
+                                style="font-size: 3rem; color: #4338ca; position: absolute; bottom: -10px; right: -15px; filter: drop-shadow(0 4px 10px rgba(67, 56, 202, 0.4));"></i>
+                            <i class="fa-solid fa-check"
+                                style="font-size: 1.5rem; color: #ffffff; position: absolute; bottom: 0px; right: -2px; z-index: 2;"></i>
+                        </div>
+                    </div>
+                    <p style="text-align: center; font-size: 0.9rem; font-weight: 500; color: #475569; margin-bottom: 25px; line-height: 1.6;"
+                        data-i18n="oauth_desc">
+                        نربط حسابك البنكي بشكل آمن عبر<br>
+                        منصة نفاذ (Open Banking)<br>
+                        لاستكمال التحقق من بياناتك المالية
+                    </p>
+                    <div
+                        style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; font-size: 0.9rem; font-weight: 700; color: #334155; padding-right: 15px;">
+                        <div class="flex-align gap-10">
+                            <i class="fa-solid fa-shield-check"
+                                style="color: #22c55e; font-size: 1.2rem; background: #dcfce7; padding: 5px; border-radius: 50%;"></i>
+                            <span data-i18n="oauth_secure">آمن 100%</span>
+                        </div>
+                        <div class="flex-align gap-10">
+                            <i class="fa-solid fa-file-signature"
+                                style="color: #22c55e; font-size: 1.2rem; background: #dcfce7; padding: 5px; border-radius: 50%;"></i>
+                            <span data-i18n="oauth_consent">موافقتك مطلوبة</span>
+                        </div>
+                        <div class="flex-align gap-10">
+                            <i class="fa-solid fa-user-lock"
+                                style="color: #22c55e; font-size: 1.2rem; background: #dcfce7; padding: 5px; border-radius: 50%;"></i>
+                            <span data-i18n="oauth_no_data">لا نحتفظ ببيانات الدخول</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 15px; text-align: center;">
+                        <button
+                            style="background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 15px; font-weight: bold; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 15px var(--primary-glow);"
+                            onclick="approveOAuth()">
+                            <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i> <span
+                                data-i18n="oauth_approve">الموافقة والمتابعة</span>
+                        </button>
+                        <a href="#" style="color: #94a3b8; font-size: 0.9rem; font-weight: 500; text-decoration: none;"
+                            onclick="document.getElementById('oauth-overlay').style.display='none'"
+                            data-i18n="oauth_back">العودة</a>
+                    </div>
+                </div>
+            </div>
+            <div id="otp-overlay"
+                style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+                <div class="app-card"
+                    style="background: #ffffff; color: #1e293b; padding: 30px 20px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.3); width: 85%;">
+                    <h2 style="color: #1e293b; font-size: 1.3rem; margin-bottom: 15px; text-align: center;">رمز التحقق</h2>
+                    <p style="text-align: center; font-size: 0.9rem; color: #475569; margin-bottom: 25px; line-height: 1.6;">
+                        أدخل الرمز المرسل لجوالك المسجل في أبشر لتأكيد ربط حسابك البنكي
+                    </p>
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <input type="tel" id="otp-input" placeholder="----" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);" class="form-input text-center" style="font-size: 2rem; letter-spacing: 15px; padding: 15px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 15px; text-align: center;">
+                        <button
+                            style="background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 15px; font-weight: bold; font-size: 1.05rem; cursor: pointer;"
+                            onclick="verifyOTP()">
+                            تأكيد الرمز
+                        </button>
+                        <a href="#" style="color: #94a3b8; font-size: 0.9rem; font-weight: 500; text-decoration: none;"
+                            onclick="document.getElementById('otp-overlay').style.display='none'">إلغاء</a>
+                    </div>
+                </div>
+            </div>
+        <div class="phone-content">
+            <div id="view-splash" class="view active"
+                style="justify-content: center; align-items: center; text-align: center; height: 100%;">
+                <div style="margin-bottom: 40px; margin-top: -60px;">
+                    <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        style="margin-bottom: 20px; filter: drop-shadow(0 10px 20px var(--primary-glow)); transform: scale(1.1);">
+                        <defs>
+                            <linearGradient id="amadGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#d2bcf3" />
+                                <stop offset="25%" stop-color="#7b539c" />
+                                <stop offset="75%" stop-color="#5a3875" />
+                                <stop offset="100%" stop-color="#361a4c" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M 50 10 L 90 90 L 70 90 L 50 50 L 30 90 L 10 90 Z" fill="url(#amadGold)" />
+                        <path d="M 50 55 L 62 72.5 L 50 90 L 38 72.5 Z" fill="url(#amadGold)" />
+                    </svg>
+                    <h1 data-i18n="title_splash" style="font-size: 2.8rem; letter-spacing: 1px;"
+                        data-i18n="title_splash">أمد كاش</h1>
+                    <p data-i18n="subtitle_splash"
+                        style="letter-spacing: 3px; font-size: 0.8rem; text-transform: uppercase; color: #a684c9;"
+                        data-i18n="subtitle_splash">Amad Cash</p>
+                </div>
+                <h2 data-i18n="splash_desc" style="font-size: 1.6rem; line-height: 1.4;" class="text-white">
+                    منصة أمد كاش خيارك<br>الافضل الى سيوله اسرع</h2>
+                <div style="position: absolute; bottom: 80px; width: 80%; left: 10%;">
+                    <button data-i18n="btn_start" class="btn btn-primary btn-block"
+                        style="font-size: 1.2rem; padding: 15px;" onclick="navigateTo('login')"
+                        data-i18n="btn_start">ابـدا</button>
+                </div>
+            </div>
+            <div id="view-login" class="view">
+                <div style="position: absolute; top: 15px; right: 20px; cursor: pointer; z-index: 10;" onclick="toggleTheme()">
+                    <i class="fa-solid fa-moon theme-toggle-icon"
+                        style="color: var(--text-muted); font-size: 1.5rem; transition: transform 0.3s ease;"></i>
+                </div>
+                <div class="text-center" style="margin-top: 50px; padding: 20px;">
+                    <h1 data-i18n="login_welcome" style="font-size: 2.5rem;" class="text-primary"
+                        data-i18n="login_welcome">مرحباً بك</h1>
+                    <p data-i18n="login_subtitle" class="text-muted mt-5" style="font-size: 1.1rem; line-height: 1.5;"
+                        data-i18n="login_subtitle">مرحباً بك بالتجربة الرقمية للتمويل الافضل</p>
+                </div>
+                <div class="mt-30" style="padding: 0 20px;">
+                    <p data-i18n="login_prompt" class="text-muted mb-15 text-center" style="font-size: 1.1rem;"
+                        data-i18n="login_prompt">للبدأ يرجى تسجيل الدخول عبر:</p>
+                    <button class="btn btn-block btn-nafath-login" onclick="triggerNafathLogin(this)">
+                        <i class="fa-solid fa-fingerprint nafath-icon" style="font-size: 1.5rem; margin-left: 8px;"></i>
+                        <span class="nafath-text" style="font-weight: 600; flex-grow: 1; text-align: center; line-height: 1.4;">للدخول من خلال بوابة النفاذ الوطني الموحد</span>
+                    </button>
+                </div>
+            </div>
+            <div id="view-dashboard" class="view">
+                <div class="app-header" style="margin: -30px -20px 20px -20px;">
+                    <div class="app-header-logo" onclick="toggleTheme()" style="cursor: pointer;">
+                        <i class="fa-solid fa-moon theme-toggle-icon" id="theme-icon"
+                            style="color: var(--text-muted); font-size: 1.2rem; transition: transform 0.3s ease;"></i>
+                    </div>
+                    <div class="flex-align gap-10 text-gold fw-bold" style="font-size: 1.2rem;"
+                        data-i18n="dash_welcome">
+                        مرحباً , احمد
+                    </div>
+                </div>
+                <div class="app-card premium-card text-center"
+                    style="padding: 30px 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border: none; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 10px 25px var(--wallet-shadow);">
+                    <h2 style="font-size: 1.2rem; font-weight: 500; color: #e2e8f0;" data-i18n="dash_total">الرصيد
+                        الإجمالي</h2>
+                    <div class="mt-10 fw-bold"
+                        style="font-size: 2.8rem; font-family: monospace; display: flex; align-items: baseline; justify-content: center; gap: 8px; color: #ffffff;">
+                        <span id="dash-card-balance">0.00</span>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Saudi_Riyal_Symbol.svg"
+                            style="height: 1.2rem; filter: brightness(0) invert(1) opacity(0.8); margin-bottom: -2px;"
+                            alt="SAR">
+                    </div>
+                    <div id="dash-active-loans" style="display:none;">0</div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px;">
+                    <div class="app-card gold-card text-center"
+                        style="padding: 15px 5px; margin-bottom: 0; border-radius: 16px;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);"
+                            data-i18n="dash_next_due">الاستحقاق<br>القادم</span>
+                        <div class="mt-5 text-gold fw-bold" style="font-size: 1rem;" data-i18n="dash_next_date">
+                            2026<br>27 يونيو</div>
+                    </div>
+                    <div class="app-card gold-card text-center"
+                        style="padding: 15px 5px; margin-bottom: 0; border-radius: 16px;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);"
+                            data-i18n="dash_limit">الحد<br>التمويلي</span>
+                        <div class="mt-5 text-gold fw-bold" style="font-size: 1.1rem; padding-top: 5px;">200,000</div>
+                    </div>
+                    <div class="app-card gold-card text-center"
+                        style="padding: 15px 5px; margin-bottom: 0; border-radius: 16px;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);"
+                            data-i18n="dash_assets">الأصول<br>المربوطة</span>
+                        <div id="dash-assets-count" class="mt-5 text-gold fw-bold"
+                            style="font-size: 1.4rem; padding-top: 5px;">0</div>
+                    </div>
+                </div>
+                <div class="app-card mb-20" style="padding: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <h3 class="text-white" style="font-size: 1rem; margin: 0;"><i class="fa-solid fa-chart-pie text-gold"></i> تحليل المحفظة</h3>
+                        <div id="chart-center-text" style="text-align: left;">
+                            <div id="chart-center-value" style="font-size: 1.1rem; font-weight: bold; color: var(--gold); min-height: 20px;"></div>
+                            <div id="chart-center-label" style="font-size: 0.7rem; color: var(--text-muted); min-height: 15px;"></div>
+                        </div>
+                    </div>
+                    <div style="position: relative; height: 180px; width: 100%;">
+                        <canvas id="portfolioChart"></canvas>
+                    </div>
+                </div>
+                <div class="mt-20 mb-20" style="padding: 0 10px;">
+                    <button data-i18n="dash_get_liquidity" class="btn btn-primary btn-block"
+                        style="padding: 18px; font-size: 1.2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(142,106,176,0.3);"
+                        onclick="attemptGetLiquidity()">
+                        احصل على سيولة الآن
+                    </button>
+                </div>
+                <div id="openbanking-card" style="padding: 0 10px; margin-top: 40px; margin-bottom: 20px;">
+                    <button class="btn btn-dark btn-block"
+                        style="padding: 15px; font-size: 1.1rem; border-radius: 12px; display: flex; justify-content: center; gap: 15px; border: 1px solid rgba(255,255,255,0.1);"
+                        onclick="openOAuth()">
+                        <span class="text-primary fw-bold" data-i18n="dash_link_alinma">اربط حسابك في بنك الانماء</span>
+                        <div
+                            style="width: 24px; height: 24px; background: #0b1a3d; border-radius: 6px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(11,26,61,0.2);">
+                            <div
+                                style="width: 5px; height: 14px; background: #ffffff; transform: skewY(-15deg); border-radius: 1px;">
+                            </div>
+                        </div>
+                    </button>
+                </div>
+                <div class="app-card" id="verified-info-card"
+                    style="display: none; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);">
+                    <div class="flex-align gap-10">
+                        <i class="fa-solid fa-circle-check text-green" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <h4 class="text-green">تم التحقق من الأهلية بنجاح</h4>
+                            <p class="text-muted sm-text mt-2">تم ربط حسابك . تم تفعيل ربط عقود الرهن رقمياً بوزارة
+                                العدل (ناجز).</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-card mt-20" style="display: none; border: 1px dashed rgba(255,255,255,0.2);">
+                    <label class="sm-text fw-bold text-muted" style="display: block; margin-bottom: 5px;"><i
+                            class="fa-solid fa-key text-gold"></i> إعدادات (Gemini API Key):</label>
+                    <input type="password" id="gemini-key-input" class="form-input"
+                        placeholder="ألصق مفتاح API للتحليل الحقيقي للصور..." onchange="saveGeminiKey()"
+                        style="font-size: 0.8rem;">
+                </div>
+            </div>
+            <div id="view-assets" class="view">
+                <div class="flex-between mb-20">
+                    <h2 class="text-gold" data-i18n="asset_title">أصولي المربوطة</h2>
+                </div>
+                <div id="empty-assets-state" class="text-center" style="padding: 40px 20px;">
+                    <i class="fa-solid fa-box-open text-muted" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <h4 class="text-white" data-i18n="asset_empty_title">لا توجد أصول مربوطة</h4>
+                    <p class="text-muted mt-5 sm-text" data-i18n="asset_empty_desc">أضف أصولك الآن (سيارات، ساعات،
+                        عقارات) لتقييمها والحصول على سيولة مالية.</p>
+                </div>
+                <div class="mt-30" style="padding: 0 10px;">
+                    <button class="btn btn-dark btn-block"
+                        style="padding: 15px; font-size: 1.1rem; border-radius: 16px; border: 1px dashed var(--gold);"
+                        onclick="attemptAddNewAsset()">
+                        <i class="fa-solid fa-plus text-gold"></i> <span data-i18n="asset_add_new">إضافة أصل جديد</span>
+                    </button>
+                </div>
+            </div>
+            <div id="view-profile" class="view">
+                <div class="flex-between mb-20">
+                    <h2 class="text-gold" data-i18n="nav_account">حسابي</h2>
+                </div>
+                <div class="app-card text-center mb-20"
+                    style="padding: 25px 15px; border-radius: 20px; border-top: 3px solid #94a3b8;">
+                    <div
+                        style="width: 80px; height: 80px; background: rgba(148, 163, 184, 0.1); border: 2px solid #94a3b8; border-radius: 50%; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-user" style="font-size: 2.5rem; color: #94a3b8;"></i>
+                    </div>
+                    <h3 class="text-white mb-5" style="font-size: 1.3rem;" data-i18n="acc_name_disp">أحمد عبدالله</h3>
+                    <p class="text-green sm-text"><i class="fa-solid fa-check-circle"></i> <span
+                            data-i18n="acc_nafath_badge">موثق عبر نفاذ </span></p>
+                </div>
+                <h4 class="text-gold mb-10" style="font-size: 1rem; padding-right: 5px;" data-i18n="acc_settings">
+                    الإعدادات العامة</h4>
+                <div class="app-card mb-20" style="padding: 5px 15px; border-radius: 16px;">
+                    <div class="flex-between py-15 border-top" style="border-top: none; cursor: pointer;"
+                        onclick="document.getElementById('acc-personal').style.display = document.getElementById('acc-personal').style.display === 'none' ? 'block' : 'none';">
+                        <div class="flex-align gap-10">
+                            <i class="fa-solid fa-id-card text-muted" style="width: 25px; text-align: center;"></i>
+                            <span class="text-white" data-i18n="acc_personal">البيانات الشخصية</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-muted sm-text"></i>
+                    </div>
+                    <div id="acc-personal" style="display: none; padding-bottom: 15px;">
+                        <div class="flex-between py-10 border-top">
+                            <span class="text-muted" data-i18n="acc_name_lbl">الاسم:</span>
+                            <span class="text-white fw-bold" data-i18n="acc_name_val">احمد عبدالله</span>
+                        </div>
+                        <div class="flex-between py-10 border-top">
+                            <span class="text-muted" data-i18n="acc_id_lbl">رقم الهوية:</span>
+                            <span class="text-white fw-bold">**10637891</span>
+                        </div>
+                        <div class="flex-between py-10 border-top">
+                            <span class="text-muted" data-i18n="acc_status_lbl">الحالة:</span>
+                            <span class="text-green fw-bold"><i class="fa-solid fa-check-circle"></i> <span
+                                    data-i18n="acc_status_val">موثوق من نفاذ</span></span>
+                        </div>
+                    </div>
+                    <div class="flex-between py-15 border-top" style="cursor: pointer;"
+                        onclick="document.getElementById('acc-banks').style.display = document.getElementById('acc-banks').style.display === 'none' ? 'block' : 'none';">
+                        <div class="flex-align gap-10">
+                            <i class="fa-solid fa-building-columns text-muted"
+                                style="width: 25px; text-align: center;"></i>
+                            <span class="text-white" data-i18n="acc_banks">الحسابات البنكية المربوطة</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-muted sm-text"></i>
+                    </div>
+                    <div id="acc-banks" style="display: none; padding-bottom: 15px;">
+                        <div class="flex-align gap-10 mt-10">
+                            <div
+                                style="width: 45px; height: 45px; background: #0b1a3d; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(11,26,61,0.2);">
+                                <div
+                                    style="width: 10px; height: 26px; background: #ffffff; transform: skewY(-15deg); border-radius: 1px;">
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-white fw-bold" data-i18n="acc_bank_alinma">مصرف الإنماء</div>
+                                <div class="text-muted sm-text" data-i18n="acc_bank_status">حساب جاري • نشط</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-between py-15 border-top">
+                        <div class="flex-align gap-10">
+                            <i class="fa-solid fa-fingerprint text-muted" style="width: 25px; text-align: center;"></i>
+                            <span class="text-white" data-i18n="acc_security">إعدادات الأمان والبصمة</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-left text-muted sm-text"></i>
+                    </div>
+                </div>
+                <h4 class="text-gold mb-10" style="font-size: 1rem; padding-right: 5px;" data-i18n="acc_support">الدعم
+                    والمساعدة</h4>
+                <div class="app-card mb-20" style="padding: 5px 15px; border-radius: 16px;">
+                    <div class="flex-between py-15 border-top" style="border-top: none;">
+                        <div class="flex-align gap-10">
+                            <i class="fa-solid fa-headset text-muted" style="width: 25px; text-align: center;"></i>
+                            <span class="text-white" data-i18n="acc_contact">تواصل مع خدمة العملاء</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-left text-muted sm-text"></i>
+                    </div>
+                    <div class="flex-between py-15 border-top" style="cursor: pointer;" onclick="toggleAppLanguage()">
+                        <div class="flex-align gap-10">
+                            <i class="fa-solid fa-language text-muted" style="width: 25px; text-align: center;"></i>
+                            <span class="text-white" id="lang-toggle-text" data-i18n="acc_lang">اللغة / Language</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-left text-muted sm-text"></i>
+                    </div>
+                    <div class="flex-between py-15 border-top" style="cursor: pointer;"
+                        onclick="document.getElementById('acc-faq').style.display = document.getElementById('acc-faq').style.display === 'none' ? 'block' : 'none';">
+                        <div class="flex-align gap-10">
+                            <i class="fa-solid fa-circle-question text-muted"
+                                style="width: 25px; text-align: center;"></i>
+                            <span class="text-white" data-i18n="acc_faq">الأسئلة الشائعة</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-muted sm-text"></i>
+                    </div>
+                    <div id="acc-faq" style="display: none; padding-bottom: 15px;">
+                        <p class="text-white mb-15 fw-bold mt-10" style="font-size: 0.9rem; line-height: 1.6;"
+                            data-i18n="faq_intro">أبرز الأسئلة الشائعة التي يبحث عنها مستخدمو تطبيق امد كاش للرهن
+                            والتمويل:</p>
+                        <div class="mb-15">
+                            <div class="text-gold fw-bold mb-5 sm-text" data-i18n="faq_sec1">طلب التمويل والشروط</div>
+                            <p class="text-white sm-text mb-5" style="line-height: 1.5;"><strong data-i18n="faq_q1">ما
+                                    هي الشروط الأساسية للحصول على التمويل؟</strong><br><span data-i18n="faq_a1">العمر،
+                                    الحد الأدنى للراتب، وجهة العمل، والسجل الائتماني.</span></p>
+                            <p class="text-white sm-text mb-5" style="line-height: 1.5;"><strong data-i18n="faq_q2">هل
+                                    يمكنني التقديم بدون تحويل راتب؟</strong><br><span data-i18n="faq_a2">نعم، نتيح
+                                    التمويل عبر الاستقطاع المباشر.</span></p>
+                            <p class="text-white sm-text mb-5" style="line-height: 1.5;"><strong data-i18n="faq_q3">ما
+                                    هو الحد الأقصى لمبلغ التمويل الذي يمكنني الحصول عليه؟</strong><br><span
+                                    data-i18n="faq_a3">يعتمد على الغرض اللي معك، وعمرك، وقيمة اللي معك.</span></p>
+                            <p class="text-white sm-text" style="line-height: 1.5;"><strong data-i18n="faq_q4">هل يدعم
+                                    التطبيق برامج الدعم السكني الحكومي؟</strong><br><span data-i18n="faq_a4">لا
+                                    لايدعم.</span></p>
+                        </div>
+                        <div class="mb-15">
+                            <div class="text-gold fw-bold mb-5 sm-text" data-i18n="faq_sec2">الحسبة والرسوم</div>
+                            <p class="text-white sm-text" style="line-height: 1.5;"><strong data-i18n="faq_q5">كيف أحسب
+                                    القسط الشهري المتوقع؟</strong><br><span data-i18n="faq_a5">يمكنك استخدام "الحاسبة
+                                    التقديرية" المدمجة.</span></p>
+                        </div>
+                        <div>
+                            <div class="text-gold fw-bold mb-5 sm-text" data-i18n="faq_sec3">📱 استخدام التطبيق</div>
+                            <p class="text-white sm-text mb-5" style="line-height: 1.5;"><strong data-i18n="faq_q6">كيف
+                                    أرفع المستندات والأوراق المطلوبة؟</strong><br><span data-i18n="faq_a6">تصوير مباشر
+                                    عبر كاميرا الهاتف داخل التطبيق.</span></p>
+                            <p class="text-white sm-text" style="line-height: 1.5;"><strong data-i18n="faq_q7">كم تستغرق
+                                    الموافقة المبدئية عبر التطبيق؟</strong><br><span data-i18n="faq_a7">تتم فورياً بعد
+                                    رفع الطلب والمستندات.</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-20 px-10">
+                    <button class="btn btn-dark btn-block"
+                        style="padding: 15px; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);"
+                        onclick="navigateTo('splash')">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> <span data-i18n="acc_logout">تسجيل
+                            الخروج</span>
+                    </button>
+                </div>
+            </div>
+            <div id="view-valuation" class="view">
+                <div class="flex-between mb-20">
+                    <h2 class="text-gold" data-i18n="val_title"> التقييم </h2>
+                    <button class="btn btn-dark sm-btn" onclick="stopCameraAndGoBack()"><i
+                            class="fa-solid fa-chevron-left"></i> رجوع</button>
+                </div>
+                <div id="wizard-step-1">
+                    <h3 class="mb-15 text-white" data-i18n="val_choose">اختر نوع الاصل</h3>
+                    <div class="category-grid">
+                        <div class="category-btn active" onclick="selectCategory('car', this)">
+                            <i class="fa-solid fa-car-side"></i>
+                            <span data-i18n="val_car">سيارة</span>
+                        </div>
+                        <div class="category-btn" onclick="selectCategory('watch', this)">
+                            <i class="fa-regular fa-clock"></i>
+                            <span data-i18n="val_watch">ساعه</span>
+                        </div>
+                        <div class="category-btn" onclick="selectCategory('gold', this)">
+                            <i class="fa-solid fa-cubes-stacked"></i>
+                            <span data-i18n="val_gold">ذهب</span>
+                        </div>
+                        <div class="category-btn" onclick="selectCategory('electronics', this)">
+                            <i class="fa-solid fa-laptop"></i>
+                            <span data-i18n="val_electronics">اجهزة إلكترونية</span>
+                        </div>
+                        <div class="category-btn" onclick="selectCategory('other_assets', this)">
+                            <i class="fa-solid fa-plus"></i>
+                            <span data-i18n="val_other">أصول أخرى</span>
+                        </div>
+                    </div>
+                    <div class="app-card mt-20">
+                        <h3 class="mb-10 text-white"><i class="fa-solid fa-camera text-gold"></i> صورة الأصل الحية بالـ
+                            AI</h3>
+                        <div class="camera-mock mb-10"
+                            style="position: relative; background: #ebecee; border: 1px solid rgba(212,175,55,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-direction: column; overflow: hidden; height: 180px;">
+                            <img id="upload-preview"
+                                style="display: none; width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; z-index: 5;">
+                            <canvas id="capture-canvas" style="display: none;"></canvas>
+                            <div id="camera-placeholder" class="text-center" style="padding: 20px; z-index: 2;">
+                                <i class="fa-solid fa-camera text-gold"
+                                    style="font-size: 2.8rem; margin-bottom: 8px;"></i>
+                                <h4 class="text-white">لم يتم التقاط صورة</h4>
+                                <p class="sm-text text-muted">اضغط لالتقاط صورة حية للأصل</p>
+                            </div>
+                        </div>
+                        <div class="text-center mb-15">
+                            <input type="file" id="image-upload" accept="image/*" capture="environment"
+                                style="display: none;" onchange="handleImageUpload(event)">
+                            <button type="button" class="btn btn-dark btn-block"
+                                onclick="document.getElementById('image-upload').click()">
+                                <i class="fa-solid fa-camera"></i> تشغيل الكاميرا
+                            </button>
+                        </div>
+                        <div id="form-watch" class="asset-form" style="display: none;">
+                            <div class="form-group">
+                                <label>الماركة التجارية:</label>
+                                <select id="watch-brand" class="form-input">
+                                    <option value="Rolex">رولكس (Rolex)</option>
+                                    <option value="Patek Philippe">باتيك فيليب (Patek Philippe)</option>
+                                    <option value="Audemars Piguet">أوديمار بيغيه (Audemars Piguet)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>موديل الساعة:</label>
+                                <input type="text" id="watch-model" class="form-input" value="Datejust 41">
+                            </div>
+                            <div class="form-group">
+                                <label>المرفقات والعلبة الأصلية:</label>
+                                <select id="watch-box" class="form-input">
+                                    <option value="yes">نعم، متوفرة العلبة والأوراق</option>
+                                    <option value="no">لا، الساعة فقط بدون مرفقات</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="form-car" class="asset-form">
+                            <div class="form-group">
+                                <label>نوع السيارة وفئتها:</label>
+                                <input type="text" id="car-model" class="form-input" value="جيب لكزس LX600">
+                            </div>
+                            <div class="form-group">
+                                <label>سنة الصنع:</label>
+                                <input type="number" id="car-year" class="form-input" value="2025">
+                            </div>
+                            <div class="form-group">
+                                <label>الممشى الحالي (كم):</label>
+                                <input type="number" id="car-mileage" class="form-input" value="50000">
+                            </div>
+                        </div>
+                        <div id="form-gold" class="asset-form" style="display: none;">
+                            <div class="form-group">
+                                <label>العيار المعتمد:</label>
+                                <select id="gold-karat" class="form-input">
+                                    <option value="24">عيار 24 </option>
+                                    <option value="22">عيار 22</option>
+                                    <option value="21" selected>عيار 21 </option>
+                                    <option value="18">عيار 18</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>الوزن الإجمالي (جرام):</label>
+                                <input type="number" id="gold-weight" class="form-input" value="100">
+                            </div>
+                            <div class="form-group">
+                                <label>الرقم التسلسلي للسبيكة (إن وجد):</label>
+                                <input type="text" id="gold-serial" class="form-input"
+                                    placeholder="مثال: SG-98432-2026">
+                            </div>
+                            <div class="form-group">
+                                <label>صورة الفاتورة (اختياري):</label>
+                                <input type="file" id="gold-invoice" accept="image/*" class="form-input"
+                                    style="font-size: 0.8rem; padding: 5px;">
+                            </div>
+                        </div>
+                        <div id="form-yacht" class="asset-form" style="display: none;">
+                            <div class="form-group">
+                                <label>ماركة ونوع اليخت:</label>
+                                <input type="text" id="yacht-model" class="form-input" value="يخت أزيموت 60">
+                            </div>
+                            <div class="form-group">
+                                <label>سنة التصنيع والطول (قدم):</label>
+                                <input type="text" id="yacht-length" class="form-input" value="2023 - 60 قدم">
+                            </div>
+                        </div>
+                        <div id="form-plane" class="asset-form" style="display: none;">
+                            <div class="form-group">
+                                <label>نوع وطراز الطائرة الخاصة:</label>
+                                <input type="text" id="plane-model" class="form-input" value="جلف ستريم G650">
+                            </div>
+                            <div class="form-group">
+                                <label>سنة الصنع وساعات الطيران:</label>
+                                <input type="text" id="plane-hours" class="form-input" value="2022 - 1200 ساعة">
+                            </div>
+                        </div>
+                        <div id="form-other" class="asset-form" style="display: none;">
+                            <div class="form-group">
+                                <label>اسم المنتج / الأصل:</label>
+                                <input type="text" id="other-title" class="form-input"
+                                    placeholder="مثال: آيفون 15 برو ماكس">
+                            </div>
+                            <div class="form-group">
+                                <label>وصف الأصل أو الملاحظات:</label>
+                                <input type="text" id="other-desc" class="form-input"
+                                    placeholder="مثال: نظيف جدا مع العلبة">
+                            </div>
+                        </div>
+                        <div id="form-electronics" class="asset-form" style="display: none;">
+                            <div class="form-group">
+                                <label>اسم الجهاز:</label>
+                                <input type="text" id="electronics-title" class="form-input"
+                                    placeholder="مثال: آيفون 15 برو ماكس / يد تحكم Xbox">
+                            </div>
+                            <div class="form-group">
+                                <label>وصف الجهاز أو ملاحظات:</label>
+                                <input type="text" id="electronics-desc" class="form-input"
+                                    placeholder="مثال: نظيف جدا مع العلبة">
+                            </div>
+                        </div>
+                        <div id="form-other_assets" class="asset-form" style="display: none;">
+                            <div class="form-group">
+                                <label>اسم المنتج / الأصل:</label>
+                                <input type="text" id="other_assets-title" class="form-input"
+                                    placeholder="مثال: حقيبة لويس فيتون">
+                            </div>
+                            <div class="form-group">
+                                <label>وصف الأصل أو الملاحظات:</label>
+                                <input type="text" id="other_assets-desc" class="form-input"
+                                    placeholder="مثال: أصلية مع الفاتورة">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-block mt-15" onclick="runValuation()">
+                            <i class="fa-solid fa-wand-magic-sparkles" style="color: #0b0e14;"></i> قيم الأصل بالـ AI
+                            الآن
+                        </button>
+                    </div>
+                </div>
+                <div class="app-card text-center" id="wizard-loading" style="display: none; padding: 60px 15px; position: relative;">
+                    <div class="scanner-container mx-auto mb-20" style="display: none;" id="scanner-animation-box">
+                        <img id="scanning-preview" src="" alt="Scanning" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="scanner-line"></div>
+                    </div>
+                    <div class="spinner" id="loading-spinner-el"></div>
+                    <h3 class="mt-20 text-gold" id="val-progress-title">جاري الفحص الدقيق بالـ AI...</h3>
+                    <p class="mt-10 text-muted" id="val-progress-text">يتم مطابقة البيانات وتقييم الأصل بناءً على أسعار
+                        السوق الحالية...</p>
+                </div>
+                <div id="wizard-result" style="display: none;">
+                    <div class="app-card" style="border: 1px solid var(--gold); text-align: center; padding: 20px;">
+                        <span class="badge badge-gold mb-10">تم التقييم بالـ AI بنجاح</span>
+                        <div
+                            style="width: 130px; height: 130px; border-radius: 16px; overflow: hidden; margin: 15px auto 10px auto; border: 2px solid var(--gold); box-shadow: 0 5px 15px rgba(212,175,55,0.2);">
+                            <img id="captured-photo" src="" alt="Captured Asset"
+                                style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <h3 class="mt-10 text-white" id="res-asset-label">ساعة رولكس Datejust 41</h3>
+                        <div class="mt-10">
+                            <span class="sm-text text-muted">القيمة السوقية العادلة:</span>
+                            <h2 class="text-gold mt-5" id="res-market-value"
+                                style="font-size: 1.8rem; font-weight: 800;">60,000 ر.س</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="app-card" style="border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <div class="flex-between mb-10">
+                            <h3 class="text-white"><i class="fa-solid fa-chart-line text-green"></i> تحليل المخاطر (Monte Carlo)</h3>
+                        </div>
+                        <p class="sm-text text-muted mb-10" style="line-height: 1.5;">تمت محاكاة 10,000 مسار سعري مستقبلي للأصل خلال فترة التمويل لتحديد الحد الآمن للتمويل.</p>
+                        <div class="flex-between">
+                            <span class="text-muted sm-text">أسوأ انخفاض متوقع (VaR):</span>
+                            <strong class="text-white" id="mc-var-value">-- ر.س</strong>
+                        </div>
+                        <div class="flex-between mt-5">
+                            <span class="text-muted sm-text">الحد الأقصى للتمويل الآمن:</span>
+                            <strong class="text-green" id="mc-safe-ltv">-- ر.س</strong>
+                        </div>
+                    </div>
+                    <div class="app-card">
+                        <div class="flex-between">
+                            <h3 class="text-white">شريط التمويل المرن (LTV)</h3>
+                            <span class="text-gold fw-bold" id="slider-percentage" style="font-size: 1.2rem;">35%</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" min="10" max="50" value="35" class="loan-slider" id="loanRange"
+                                oninput="updateLoanCalculation()">
+                        </div>
+                        <div class="flex-between sm-text text-muted">
+                            <span>الحد الأدنى (10%)</span>
+                            <span>الحد الأقصى (50%)</span>
+                        </div>
+                    </div>
+                    <div class="app-card">
+                        <div class="form-group mb-0">
+                            <label class="text-white">نوع التغطية التأمينية للأصل (لحماية الطرفين):</label>
+                            <select id="insurance-select" class="form-input mt-5" onchange="updateLoanCalculation()">
+                                <option value="premium">تأمين شامل - التعاونية (0.50% رسوم إضافية)</option>
+                                <option value="standard" selected>تأمين أساسي ضد السرقة والتلف (0.25% رسوم)</option>
+                                <option value="none">بدون تأمين إضافي (مخاطر عالية)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="app-card">
+                        <h3 class="mb-15 text-gold">تفاصيل التسييل الفوري</h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div class="flex-between">
+                                <span class="text-muted">المبلغ المسيل المطلوب:</span>
+                                <strong class="text-white" id="calc-amount">21,000 ر.س</strong>
+                            </div>
+                            <div class="flex-between">
+                                <span class="text-muted">رسوم تأمين وتسييل الأصول:</span>
+                                <strong class="text-white" id="calc-fees">52.50 ر.س</strong>
+                            </div>
+                            <div class="flex-between">
+                                <span class="text-muted">الرسوم الإدارية (1%):</span>
+                                <strong class="text-white" id="calc-admin-fees">210.00 ر.س</strong>
+                            </div>
+                            <div class="flex-between">
+                                <span class="text-muted">فترة السداد والتقسيط:</span>
+                                <strong class="text-white">6 أشهر مرنة</strong>
+                            </div>
+                            <div class="flex-between">
+                                <span class="text-muted" data-i18n="res_apr">معدل النسبة السنوي (APR):</span>
+                                <strong class="text-green">2.4% (بالمصرفية المفتوحة)</strong>
+                            </div>
+                            <div class="flex-between mt-5 pt-5 border-top">
+                                <span class="text-gold fw-bold">القسط الشهري التقريبي:</span>
+                                <strong class="text-gold fw-bold" style="font-size: 1.1rem;" id="calc-monthly">3,543
+                                    ر.س</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="app-card"
+                        style="background: rgba(212,175,55,0.05); border: 1px solid rgba(212,175,55,0.2); display: flex; gap: 12px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-info text-gold" style="font-size: 1.3rem; margin-top: 2px;"></i>
+                        <p class="sm-text text-muted" style="line-height: 1.6;">تأكيد التمويل يفعّل الرهن الرقمي
+                            القانوني للأصل. سيتم إلغاء الرهن تلقائياً عند استقطاع دفعات السداد عند نزول الراتب.</p>
+                    </div>
+                    <button class="btn btn-primary btn-block mt-10 mb-20" onclick="approveLiquidity()"
+                        style="padding: 16px; font-size: 1.1rem;">
+                        <i class="fa-solid fa-credit-card text-dark-theme"></i> اعتماد التمويل وتسييل الكاش فوراً
+                    </button>
+                </div>
+            </div>
+            <div id="view-wallet" class="view">
+                <div class="flex-between mb-20">
+                    <h2 class="text-gold" data-i18n="wall_title">المحفظة والبطاقة الرقمية</h2>
+                    <button class="btn btn-dark sm-btn" onclick="navigateTo('dashboard')"><i
+                            class="fa-solid fa-house"></i> الرئيسية</button>
+                </div>
+                <div class="apple-wallet" style="margin-bottom: 20px;">
+                    <div class="wallet-card" id="virtual-card" style="position: relative; padding: 0; background: none; border: none; box-shadow: none; height: auto; max-width: 380px; width: 100%; margin: 0 auto;">
+                        <img src="Digital cards_Gold Debit.png" style="width: 100%; height: auto; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); display: block;">
+                        <div style="position: absolute; bottom: 30%; left: 8%; font-family: monospace; font-size: 1.15rem; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); z-index: 2; direction: ltr; white-space: nowrap; color: white;">
+                            4543  5678  9876  9845
+                        </div>
+                        <div style="position: absolute; bottom: 10%; left: 8%; display: flex; gap: 20px; font-family: sans-serif; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); z-index: 2; direction: ltr; align-items: center; white-space: nowrap; color: white;">
+                            <span style="font-size: 0.85rem; font-weight: bold;">06/31</span>
+                            <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Ahmed Abdullah</span>
+                        </div>
+                    </div>
+                    <div
+                        style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; margin-top: 25px;">
+                        <button class="add-wallet-btn" onclick="addToAppleWallet()"
+                            style="justify-content: center; padding: 12px; font-size: 0.9rem;">
+                            <i class="fa-brands fa-apple" style="font-size: 1.3rem;"></i>
+                            <span data-i18n="wall_add_apple">إضافة إلى Apple Wallet</span>
+                        </button>
+                        <button class="add-wallet-btn" onclick="addToAlinmaWallet()"
+                            style="background: linear-gradient(135deg, #1a1c23 0%, #05070a 100%); color: var(--gold); border: 1px solid rgba(212,175,55,0.4); justify-content: center; padding: 12px; font-size: 0.9rem;">
+                            <i class="fa-solid fa-building-columns" style="font-size: 1.2rem;"></i>
+                            <span data-i18n="wall_add_alinma">إضافة إلى محفظة الإنماء</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="app-card" id="repayment-card" style="display: none;">
+                    <div class="flex-between mb-10">
+                        <h3 class="text-white">سداد التمويل التلقائي</h3>
+                        <span class="badge badge-gold" id="pledge-status-badge">الأصل مرهون</span>
+                    </div>
+                    <p class="text-muted">سيتم استقطاع الدفعة الأولى عند نزول الراتب القادم وفك الرهن تدريجياً.</p>
+                    <div
+                        style="margin-top: 15px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                        <span class="sm-text text-muted">الوقت المتبقي لنزول الراتب والاستقطاع:</span>
+                        <h3 class="mt-10 text-gold" id="countdown-timer" style="letter-spacing: 1px;">23 يوم : 14 ساعة :
+                            08 دقيقة</h3>
+                    </div>
+                    <div class="border-top pt-15 mt-15">
+                        <h4 class="mb-15 sm-text text-white">جدول الأقساط الشهرية الستة (6 أشهر):</h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px;" id="installments-list">
+                        </div>
+                        <button class="btn btn-primary btn-block mt-20" id="early-pay-btn"
+                            onclick="payInstallmentEarly()">
+                            <i class="fa-solid fa-money-bill-transfer text-dark-theme"></i> ادفع القسط الحالي مبكراً
+                        </button>
+                    </div>
+                </div>
+                <div class="app-card mb-20">
+                    <h3 class="mb-15 text-gold" data-i18n="wall_tx_title">سجل العمليات المالي</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="tx-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="wall_tx_date">التاريخ</th>
+                                    <th data-i18n="wall_tx_type">نوع العملية</th>
+                                    <th style="text-align: left;" data-i18n="wall_tx_amount">المبلغ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tx-tbody">
+                                <tr class="empty-tx-row">
+                                    <td colspan="3" class="text-center py-20 text-muted sm-text"
+                                        data-i18n="wall_tx_empty">لا توجد عمليات حالية للبطاقة</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-nav" style="display: none;">
+            <a class="nav-item active"
+                onclick="navigateTo('dashboard'); document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
+                <i class="fa-solid fa-house"></i>
+                <span data-i18n="nav_home">الرئيسية</span>
+            </a>
+            <a class="nav-item"
+                onclick="navigateTo('assets'); document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
+                <i class="fa-solid fa-cubes-stacked"></i>
+                <span data-i18n="nav_assets">اصولي</span>
+            </a>
+            <a class="nav-item"
+                onclick="navigateTo('wallet'); document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+                <span data-i18n="nav_history">عملياتي</span>
+            </a>
+            <a class="nav-item"
+                onclick="navigateTo('profile'); document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); this.classList.add('active');">
+                <i class="fa-solid fa-user"></i>
+                <span data-i18n="nav_account">حسابي</span>
+            </a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="main.js?v=20.0"></script>
+</body>
+</html>
